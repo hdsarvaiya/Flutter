@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/home.dart';
-import 'package:flutter_application_2/login.dart'; // Import the Login page
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -19,10 +18,10 @@ class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> registration() async {
-    if (_formKey.currentState?.validate() ?? false) { 
+    if (_formKey.currentState?.validate() ?? false) { // Validate the form
       try {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: mailcontroller.text,
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: mailcontroller.text, // Use controller text here
           password: passcontroller.text,
         );
 
@@ -139,40 +138,31 @@ class _SignupPageState extends State<SignupPage> {
                 obscureText: true,
               ),
               const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: registration,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  "Sign Up",
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Already have an account?"),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginPage()),
-                      );
-                    },
-                    child: const Text(
-                      "Log In",
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                      ),
+
+              GestureDetector(
+                onTap: (){
+                  if(_formKey.currentState!.validate()){
+                    setState(() {
+                      email=mailcontroller.text;
+                      name=namecontroller.text;
+                      password=passcontroller.text;
+                    });
+                  }
+                  registration();
+                },
+                child: ElevatedButton(
+                  onPressed: registration, // Call the registration function
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),   
                     ),
                   ),
-                ],
+                  child: const Text(
+                    "Sign Up",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
               ),
             ],
           ),

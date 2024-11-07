@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/home.dart';
-import 'package:flutter_application_2/forgotpassword.dart'; // Import the Forgot Password page
+import 'package:flutter_application_2/forgotpassword.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Home()),
+          MaterialPageRoute(builder: (context) =>  const Home()),
         );
       } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -34,6 +34,20 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     }
+  }
+
+  // Placeholder for Google login functionality
+  Future<void> loginWithGoogle() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Login with Google (not implemented)")),
+    );
+  }
+
+  // Placeholder for Apple login functionality
+  Future<void> loginWithApple() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Login with Apple (not implemented)")),
+    );
   }
 
   @override
@@ -122,6 +136,39 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.blue,
                     fontWeight: FontWeight.bold,
                   ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              // Text links for Google and Apple login
+              Center(
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: (){
+                        // AuthMethods().signInWithGoogle(context);
+                      },
+                      child: const Text(
+                        "Login with Google",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: loginWithApple,
+                      child: const Text(
+                        "Login with Apple",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
