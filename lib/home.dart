@@ -22,16 +22,36 @@ class _HomeState extends State<Home> {
   String? selectedBreed; // To hold the currently selected breed
   String? selectedBreedType; // To hold the selected breed type
 
+  String? selectedBodyColor; // To hold the selected body color
+
+  String? selectedTailSwitch; // To hold the selected tail switch state
+
   bool isLeftHornSelected = false; // Selection state for Left Horn
   bool isRightHornSelected = false; // Selection state for Right Horn
 
+  String? selectedLeftHorn; // To hold the selected state for Left Horn
+  String? selectedRightHorn; // To hold the selected state for Right Horn
+
   bool _isTailSwitched = false; // Track state for "Switch of tail"
   int? selectedAge; // To hold the selected approximate age
+  int? selectedMilkYield; // To hold the selected approximate age
 
   int? selectedLactation; // To hold the selected number of lactation (0-9)
   int? selectedCalvingMonth; // To hold the selected calving month (0-10)
 
-  final List<String> breeds = [
+  bool isRemarksBoxVisible = false; // Tracks visibility of the remarks box
+  TextEditingController remarksController =
+      TextEditingController(); // Controller for remarks
+  TextEditingController tagController =
+      TextEditingController(); // Controller for remarks
+  TextEditingController marketValueController=
+      TextEditingController(); // Controller for remarks
+  TextEditingController vendorRemarkController =
+      TextEditingController(); // Controller for remarks
+  TextEditingController tagdateController =
+      TextEditingController(); // Controller for remarks
+
+  final List<String> cowBreeds = [
     'Holstein Fresian',
     'Jersey',
     'Khillari',
@@ -42,6 +62,56 @@ class _HomeState extends State<Home> {
     'Other'
   ];
 
+  final List<String> buffaloBreeds = [
+    'Murrah',
+    'Banni',
+    'Surti',
+    'Nili-Ravi',
+    'Jaffarabadi',
+    'Mehsana',
+    'Pandharpuri',
+    'Kundhi',
+    'Kundli',
+    'Bengal',
+    'Kachi',
+    'Tharparkar',
+    'Sahiwal',
+    'Chhattisgarh'
+  ];
+
+  final List<String> otherBreeds = ['Other'];
+
+  final List<String> bodyColors = [
+    'Black',
+    'Black & White',
+    'White & Black',
+    'Brown',
+    'Brown & Black',
+    'Grey',
+    'Grey & Black',
+  ];
+
+  final List<String> tailSwitchOptions = [
+    'Black',
+    'Black & White',
+    'White & Black',
+    'Brown',
+    'Brown & Black',
+    'Grey',
+    'Grey & Black',
+  ];
+
+  final List<String> hornOptions = [
+    'Downward',
+    'Sideward',
+    'Forward',
+    'Rolled',
+    'Short',
+    'Curved',
+    'Backward',
+    'Crescent',
+    'Dehorned',
+  ];
   Future<void> _pickImage(int index) async {
     showDialog(
       context: context,
@@ -87,12 +157,21 @@ class _HomeState extends State<Home> {
       'selectedSpecies': selectedSpecies,
       'selectedBreed': selectedBreed,
       'selectedBreedType': selectedBreedType,
-      'isLeftHornSelected': isLeftHornSelected,
-      'isRightHornSelected': isRightHornSelected,
-      'isTailSwitched': _isTailSwitched,
+      'selectedBodyColor': selectedBodyColor,
+      'selectedTailSwitch': selectedTailSwitch,
       'selectedAge': selectedAge,
+      'selectedLeftHorn': selectedLeftHorn,
+      'selectedRightHorn': selectedRightHorn,
       'selectedLactation': selectedLactation,
       'selectedCalvingMonth': selectedCalvingMonth,
+      'selectedMilkYield': selectedMilkYield, // Corrected typo here
+      'remarks': remarksController.text, // Include the remarks text
+
+
+      'tagNo': tagController.text, // Add Tag No from the first tab
+      'tagDate': tagdateController.text, // Add Tag Date from the first tab
+      'marketValue': marketValueController.text, // Add Market Value from the first tab
+      'vendorRemark': vendorRemarkController.text, // Add Vendor Remark from the first tab
     };
 
     const url = 'https://backend-4xmp.onrender.com/api/submit';
@@ -226,6 +305,17 @@ class _HomeState extends State<Home> {
     }
   }
 
+// Function to update breed options based on the selected species
+  List<String> getBreeds() {
+    if (selectedSpecies == 'Cow') {
+      return cowBreeds;
+    } else if (selectedSpecies == 'Buffalo') {
+      return buffaloBreeds;
+    } else {
+      return []; // Empty list for Other species or if none is selected
+    }
+  }
+
   @override
   void dispose() {
     for (var controller in _videos) {
@@ -262,7 +352,6 @@ class _HomeState extends State<Home> {
           children: [
             // First Tab - Status
             SingleChildScrollView(
-              // Make the Status tab scrollable
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -276,37 +365,89 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Each button placed in a column with spacing between them
-                    _buildStatusButton(
-                      label: 'Tag No',
-                      icon: Icons.tag,
-                      color: Colors.grey,
+
+                    // Tag No Input
+                    const Text(
+                      'Tag No',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: tagController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter Tag No',
+                      ),
                     ),
                     const SizedBox(height: 20),
-                    _buildStatusButton(
-                      label: 'Tag Date',
-                      icon: Icons.calendar_today,
-                      color: Colors.grey,
+
+                    // Tag Date Input (Date Picker)
+                    const Text(
+                      'Tag Date',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: tagdateController, 
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Select Date',
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
+                      readOnly: true,
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2101),
+                        );
+                        if (pickedDate != null) {
+                          // You can use pickedDate for any other logic if required
+                        }
+                      },
                     ),
                     const SizedBox(height: 20),
-                    _buildStatusButton(
-                      label: 'Market Value',
-                      icon: Icons.show_chart,
-                      color: Colors.grey,
+
+                    // Market Value Input
+                    const Text(
+                      'Market Value',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: marketValueController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter Market Value',
+                        prefixIcon: Icon(Icons.currency_rupee_sharp),
+                      ),
+                      keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: 20),
-                    _buildStatusButton(
-                      label: 'Vendor Remark',
-                      icon: Icons.note,
-                      color: Colors.grey,
+
+                    // Vendor Remark Input
+                    const Text(
+                      'Vendor Remark',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: vendorRemarkController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter Vendor Remark',
+                        prefixIcon: Icon(Icons.note),
+                      ),
+                      maxLines: 3, // Allow multiline input for remarks
+                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
             // Second Tab - Details
             SingleChildScrollView(
-              // Make the Details tab scrollable
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -346,7 +487,7 @@ class _HomeState extends State<Home> {
                           value: selectedBreed,
                           isExpanded: true,
                           icon: const Icon(Icons.arrow_drop_down),
-                          items: breeds.map((String breed) {
+                          items: getBreeds().map((String breed) {
                             return DropdownMenuItem<String>(
                               value: breed,
                               child: Text(breed),
@@ -377,66 +518,151 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    // Body Color Button
-                    _buildStatusButton(
-                      label: 'Body Color',
-                      icon: Icons.color_lens,
-                      color: Colors.brown,
+                    const Text(
+                      'Body Color',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          hint: const Text("Select Body Color"),
+                          value: selectedBodyColor,
+                          isExpanded: true,
+                          icon: const Icon(Icons.arrow_drop_down),
+                          items: bodyColors.map((String color) {
+                            return DropdownMenuItem<String>(
+                              value: color,
+                              child: Text(color),
+                            );
+                          }).toList(),
+                          onChanged: (String? newColor) {
+                            setState(() {
+                              selectedBodyColor = newColor;
+                              print("Selected body color: $selectedBodyColor");
+                            });
+                          },
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
+                    const Text(
+                      'Horns',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildHornOption("Left Horn", Icons.u_turn_left_rounded,
-                            isLeftHornSelected, (bool selected) {
-                          setState(() {
-                            isLeftHornSelected = selected;
-                          });
-                        }),
-                        _buildHornOption(
-                            "Right Horn",
-                            Icons.u_turn_right_rounded,
-                            isRightHornSelected, (bool selected) {
-                          setState(() {
-                            isRightHornSelected = selected;
-                          });
-                        }),
+                        // Left Horn Dropdown
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            margin: const EdgeInsets.only(right: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                hint: const Text("Left Horn"),
+                                value: selectedLeftHorn,
+                                isExpanded: true,
+                                icon: const Icon(Icons.arrow_drop_down),
+                                items: hornOptions.map((String horn) {
+                                  return DropdownMenuItem<String>(
+                                    value: horn,
+                                    child: Text(horn),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newHorn) {
+                                  setState(() {
+                                    selectedLeftHorn = newHorn;
+                                    print(
+                                        "Selected left horn: $selectedLeftHorn");
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Right Horn Dropdown
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            margin: const EdgeInsets.only(left: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                hint: const Text("Right Horn"),
+                                value: selectedRightHorn,
+                                isExpanded: true,
+                                icon: const Icon(Icons.arrow_drop_down),
+                                items: hornOptions.map((String horn) {
+                                  return DropdownMenuItem<String>(
+                                    value: horn,
+                                    child: Text(horn),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newHorn) {
+                                  setState(() {
+                                    selectedRightHorn = newHorn;
+                                    print(
+                                        "Selected right horn: $selectedRightHorn");
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    // New Button - Switch of Tail
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isTailSwitched = !_isTailSwitched;
-                          print("Switch of tail: $_isTailSwitched");
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 15),
-                        decoration: BoxDecoration(
-                          color:
-                              _isTailSwitched ? Colors.brown : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.swap_horiz,
-                                color: _isTailSwitched
-                                    ? Colors.white
-                                    : Colors.black54),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Switch of tail",
-                              style: TextStyle(
-                                color: _isTailSwitched
-                                    ? Colors.white
-                                    : Colors.black54,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+
+                    const Text(
+                      'Switch of Tail',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          hint: const Text("Select Tail Color"),
+                          value: selectedTailSwitch,
+                          isExpanded: true,
+                          icon: const Icon(Icons.arrow_drop_down),
+                          items: tailSwitchOptions.map((String option) {
+                            return DropdownMenuItem<String>(
+                              value: option,
+                              child: Text(option),
+                            );
+                          }).toList(),
+                          onChanged: (String? newState) {
+                            setState(() {
+                              selectedTailSwitch = newState;
+                              print("Selected tail state: $selectedTailSwitch");
+                            });
+                          },
                         ),
                       ),
                     ),
@@ -557,55 +783,82 @@ class _HomeState extends State<Home> {
                     const SizedBox(height: 20),
 
                     // Milk Yield/Day Button
-                    GestureDetector(
-                      onTap: () {
-                        print("Milk Yield/Day Button pressed");
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 15),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.water_drop_outlined,
-                                color: Colors.black),
-                            SizedBox(width: 10),
-                            Text(
-                              "Milk Yield/Day",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                    const Text(
+                      'Milk Yield (Liters/Day)',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<int>(
+                          hint: const Text("Select Milk Yield"),
+                          value: selectedMilkYield,
+                          isExpanded: true,
+                          icon: const Icon(Icons.arrow_drop_down),
+                          items: List.generate(21, (index) => index)
+                              .map((yieldValue) {
+                            return DropdownMenuItem<int>(
+                              value: yieldValue,
+                              child: Text(
+                                  "$yieldValue Liter${yieldValue > 1 ? 's' : ''}"),
+                            );
+                          }).toList(),
+                          onChanged: (int? newYield) {
+                            setState(() {
+                              selectedMilkYield = newYield;
+                              print(
+                                  "Selected milk yield: $selectedMilkYield Liters/Day");
+                            });
+                          },
                         ),
                       ),
                     ),
                     const SizedBox(height: 20),
 
                     // Other Identification (Remarks) Button
+                    // Inside your widget tree:
+                    const Text(
+                      'Other Identification (Remarks)',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
                     GestureDetector(
                       onTap: () {
-                        print("Other Identification (Remarks) Button pressed");
+                        setState(() {
+                          isRemarksBoxVisible = !isRemarksBoxVisible;
+                          print("Remarks box visibility: $isRemarksBoxVisible");
+                        });
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 15),
                         decoration: BoxDecoration(
-                          color: Colors.grey[300],
+                          color: isRemarksBoxVisible
+                              ? Colors.brown
+                              : Colors.grey[300],
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(Icons.edit, color: Colors.black),
-                            SizedBox(width: 10),
+                            Icon(Icons.edit,
+                                color: isRemarksBoxVisible
+                                    ? Colors.white
+                                    : Colors.black54),
+                            const SizedBox(width: 10),
                             Text(
                               "Other Identification (Remarks)",
                               style: TextStyle(
-                                color: Colors.black,
+                                color: isRemarksBoxVisible
+                                    ? Colors.white
+                                    : Colors.black54,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -613,6 +866,25 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    // Text box appears when the remarks button is tapped
+                    if (isRemarksBoxVisible)
+                      TextField(
+                        controller: remarksController,
+                        decoration: InputDecoration(
+                          labelText: "Enter Remarks",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                        ),
+                        maxLines: 3, // Allows for multiline input
+                        onChanged: (value) {
+                          print("Remarks entered: $value");
+                        },
+                      ),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () => sendDataToBackend(context),
                       child: Text('Submit'),
@@ -722,6 +994,7 @@ class _HomeState extends State<Home> {
       onTap: () {
         setState(() {
           selectedSpecies = species;
+          selectedBreed = null; // Reset breed selection when species changes
           print("Selected species: $selectedSpecies");
         });
       },
