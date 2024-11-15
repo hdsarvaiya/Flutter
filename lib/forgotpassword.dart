@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/signup.dart'; 
-
+import 'package:app/signup.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -29,6 +28,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.message ?? "Error sending password reset email"),
+            backgroundColor: Colors.brown[700],
           ),
         );
       }
@@ -38,11 +38,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.brown[50],
       appBar: AppBar(
         title: const Text("Forgot Password"),
         centerTitle: true,
         elevation: 0,
+        backgroundColor: Colors.brown[600],
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -57,7 +62,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.brown,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -73,7 +78,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 decoration: const InputDecoration(
                   labelText: "Email",
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
+                  prefixIcon: Icon(Icons.email, color: Colors.brown),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -81,6 +86,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ElevatedButton(
                 onPressed: sendPasswordResetEmail,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown[400],
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -88,7 +94,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 child: const Text(
                   "Send Email",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 15),
@@ -102,7 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 child: const Text(
                   "Create New Account",
                   style: TextStyle(
-                    color: Colors.blue,
+                    color: Colors.brown,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

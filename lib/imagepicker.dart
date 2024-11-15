@@ -61,3 +61,7 @@ class _ImagePickerExampleState extends State<ImagePickerExample> {
     );
   }
 }
+
+extension on ImagePicker {
+  getImage({required ImageSource source}) {}
+}

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/home.dart';
+import 'package:app/dashboard.dart';
+import 'package:app/login.dart'; // Import the login page
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -10,7 +11,6 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  String email = "", password = "", name = "";
   TextEditingController namecontroller = TextEditingController();
   TextEditingController passcontroller = TextEditingController();
   TextEditingController mailcontroller = TextEditingController();
@@ -36,7 +36,7 @@ class _SignupPageState extends State<SignupPage> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Home()),
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
         );
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
@@ -59,6 +59,10 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ),
           );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()), // Redirect to login if account exists
+          );
         }
       }
     }
@@ -67,11 +71,16 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.brown[50], // Match the login page background color
       appBar: AppBar(
-        title: const Text("Sign Up"),
+        title: const Text("Sign up"),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+        ),
         centerTitle: true,
         elevation: 0,
+        backgroundColor: Colors.brown[600], // Match the login page AppBar color
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -86,7 +95,7 @@ class _SignupPageState extends State<SignupPage> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.brown, // Dark brown color for heading
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -102,7 +111,7 @@ class _SignupPageState extends State<SignupPage> {
                 decoration: const InputDecoration(
                   labelText: "Name",
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: Icon(Icons.person, color: Colors.brown), // Dark brown prefix icon
                 ),
               ),
               const SizedBox(height: 15),
@@ -117,7 +126,7 @@ class _SignupPageState extends State<SignupPage> {
                 decoration: const InputDecoration(
                   labelText: "Email",
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
+                  prefixIcon: Icon(Icons.email, color: Colors.brown), // Dark brown prefix icon
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -133,35 +142,36 @@ class _SignupPageState extends State<SignupPage> {
                 decoration: const InputDecoration(
                   labelText: "Password",
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
+                  prefixIcon: Icon(Icons.lock, color: Colors.brown), // Dark brown prefix icon
                 ),
                 obscureText: true,
               ),
               const SizedBox(height: 30),
-
-              GestureDetector(
-                onTap: (){
-                  if(_formKey.currentState!.validate()){
-                    setState(() {
-                      email=mailcontroller.text;
-                      name=namecontroller.text;
-                      password=passcontroller.text;
-                    });
-                  }
-                  registration();
+              ElevatedButton(
+                onPressed: registration, // Call the registration function
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown[400], // Dark brown button color to match login
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  "Sign Up",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
                 },
-                child: ElevatedButton(
-                  onPressed: registration, // Call the registration function
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),   
-                    ),
-                  ),
-                  child: const Text(
-                    "Sign Up",
-                    style: TextStyle(fontSize: 18),
-                  ),
+                child: const Text(
+                  "Already have an account? Log in",
+                  style: TextStyle(fontSize: 16, color: Colors.brown), // Dark brown color for text
                 ),
               ),
             ],

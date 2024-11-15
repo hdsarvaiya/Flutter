@@ -1,12 +1,13 @@
+import 'package:app/dashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/home.dart';
-import 'package:flutter_application_2/forgotpassword.dart';
+import 'package:app/forgotpassword.dart';
+import 'package:app/signup.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
-  @override
+  @override       
   State<LoginPage> createState() => _LoginPageState();
 }
 
@@ -24,26 +25,25 @@ class _LoginPageState extends State<LoginPage> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) =>  const Home()),
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
         );
       } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.message ?? "Login failed"),
+            backgroundColor: Colors.brown[700],
           ),
         );
       }
     }
   }
 
-  // Placeholder for Google login functionality
   Future<void> loginWithGoogle() async {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Login with Google (not implemented)")),
     );
   }
 
-  // Placeholder for Apple login functionality
   Future<void> loginWithApple() async {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Login with Apple (not implemented)")),
@@ -53,11 +53,16 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.brown[50],
       appBar: AppBar(
-        title: const Text("Log In"),
+        title: const Text("Login"),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+        ),
         centerTitle: true,
         elevation: 0,
+        backgroundColor: Colors.brown[600],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -68,11 +73,11 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
-                "Log In",
+                "Login",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.brown,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -88,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: const InputDecoration(
                   labelText: "Email",
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
+                  prefixIcon: Icon(Icons.email, color: Colors.brown),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
@@ -104,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: const InputDecoration(
                   labelText: "Password",
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
+                  prefixIcon: Icon(Icons.lock, color: Colors.brown),
                 ),
                 obscureText: true,
               ),
@@ -112,6 +117,7 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 onPressed: login,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.brown[400],
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -119,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: const Text(
                   "Log In",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 15),
@@ -133,42 +139,27 @@ class _LoginPageState extends State<LoginPage> {
                 child: const Text(
                   "Forgot Password?",
                   style: TextStyle(
-                    color: Colors.blue,
+                    color: Colors.brown,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               const SizedBox(height: 30),
-              // Text links for Google and Apple login
               Center(
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      onTap: (){
-                        // AuthMethods().signInWithGoogle(context);
-                      },
-                      child: const Text(
-                        "Login with Google",
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SignupPage()),
+                    );
+                  },
+                  child: const Text(
+                    "Don't have an account? Sign Up",
+                    style: TextStyle(
+                      color: Colors.brown,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: loginWithApple,
-                      child: const Text(
-                        "Login with Apple",
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ],

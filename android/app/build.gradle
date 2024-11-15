@@ -29,7 +29,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android 
     {
-    namespace "com.example.flutter_application_2" // Match this to your package name
+    namespace "com.example.app" // Match this to your package name
     compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
@@ -47,7 +47,7 @@ android
     }
 
     defaultConfig {
-        applicationId "com.example.flutter_application_2"
+        applicationId "com.example.app"
         minSdkVersion 24
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()

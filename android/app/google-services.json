@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:262225239570:android:d25aea77d36d223576c2cb",
         "android_client_info": {
-          "package_name": "com.example.flutter_application_2"
+          "package_name": "com.example.app"
         }
       },
       "oauth_client": [
@@ -34,7 +34,7 @@
               "client_id": "262225239570-hvpe4qe3rn5kdqv0djk5qp9cf0henspq.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.flutterApplication2"
+                "bundle_id": "com.example.app"
               }
             }
           ]
